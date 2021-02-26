@@ -1,2 +1,5 @@
 __attribute__((visibility("default")))
-int vlc_entry() { return 0; }
+int extern_symbol();
+
+__attribute__((visibility("default")))
+int vlc_entry() { return extern_symbol(); }
