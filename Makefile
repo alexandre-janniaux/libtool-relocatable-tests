@@ -1,5 +1,6 @@
 LIBTOOL = libtool
 LIBTOOL_OPTIONS = --tag=CC
+CC ?= cc
 
 all: libmain_lib.la exe
 	./exe
@@ -15,21 +16,21 @@ stats: libmain_lib.la
 
 lib.la: lib.c
 	mkdir -p .deps/
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile gcc -c -static -fPIC lib.c -o .deps/lib.lo
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link gcc -static -export-symbols-regex "^vlc_entry" -o $@ \
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile $(CC) -c -static -fPIC lib.c -o .deps/lib.lo
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link $(CC) -static -export-symbols-regex "^vlc_entry" -o $@ \
 		-Wl,--whole-archive .deps/lib.lo -Wl,--no-whole-archive
 
 libmain_lib.la: main_lib.c lib.la
 	mkdir -p .deps/
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile gcc -c -fPIC -static main_lib.c -o .deps/main_lib.lo
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link gcc -static -export-symbols-regex "^vlc_entry|^entrypoint" -o .deps/$@.lo \
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile $(CC) -c -fPIC -static main_lib.c -o .deps/main_lib.lo
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link $(CC) -static -export-symbols-regex "^vlc_entry|^entrypoint" -o .deps/$@.lo \
 		-Wl,--whole-archive .deps/main_lib.lo lib.la -Wl,--no-whole-archive
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link gcc -fPIC -export-symbols-regex "^vlc_entry|^entrypoint" -o $@ \
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link $(CC) -fPIC -export-symbols-regex "^vlc_entry|^entrypoint" -o $@ \
 		-Wl,--whole-archive .deps/$@.o -Wl,--no-whole-archive
 
 exe: libmain_lib.la stats
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile cc -c -o .deps/main.lo main.c
-	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link cc -o $@ .deps/main.lo libmain_lib.la
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=compile $(CC) -c -o .deps/main.lo main.c
+	$(LIBTOOL) $(LIBTOOL_OPTIONS) --mode=link $(CC) -o $@ .deps/main.lo libmain_lib.la
 
 clean:
 	rm -rf lib.la libmain_lib.la .deps/ .libs/
