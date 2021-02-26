@@ -1,4 +1,4 @@
-LIBTOOL = libtool
+LIBTOOL ?= libtool
 LIBTOOL_OPTIONS = --tag=CC
 CC ?= cc
 
